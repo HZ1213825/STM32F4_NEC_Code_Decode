@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "delay.h": "c",
+        "stm32f4xx.h": "c",
+        "usart.h": "c",
+        "stdio.h": "c"
+    },
+    "files.autoGuessEncoding": true
+}
