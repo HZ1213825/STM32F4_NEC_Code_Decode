@@ -3,7 +3,8 @@
         "delay.h": "c",
         "stm32f4xx.h": "c",
         "usart.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "ir_nec.h": "c"
     },
     "files.autoGuessEncoding": true
 }

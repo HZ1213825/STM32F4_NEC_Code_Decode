@@ -235,6 +235,13 @@ __STATIC_INLINE void IR_NEC_Send_1(void)
     Delay_us(1600); // 1.69ms灭
     //共2.25ms
 }
+void IR_NEC_Send_End(void)
+{
+    TIM_Cmd(IR_NEC_Send_TIM_TIMx, ENABLE);
+    Delay_us(650); // 6ms亮
+    TIM_Cmd(IR_NEC_Send_TIM_TIMx, DISABLE);
+    GPIO_ResetBits(IR_NEC_Send_GPIOx, IR_NEC_Send_GPIO_Pin);
+}
 //发送重复码
 void IR_NEC_Send_Repect(void)
 {
@@ -246,13 +253,9 @@ void IR_NEC_Send_Repect(void)
     GPIO_ResetBits(IR_NEC_Send_GPIOx, IR_NEC_Send_GPIO_Pin);
     Delay_us(2250); // 2.25ms灭
                     //共11.25ms
-    TIM_Cmd(IR_NEC_Send_TIM_TIMx, ENABLE);
-    Delay_us(650); // 6ms亮
-    TIM_Cmd(IR_NEC_Send_TIM_TIMx, DISABLE);
-    GPIO_ResetBits(IR_NEC_Send_GPIOx, IR_NEC_Send_GPIO_Pin);
+    IR_NEC_Send_End();
     Delay_ms(100);
 }
-
 void IR_NEC_Send_Code(u8 *Dat, u32 Len)
 {
     u32 zj;
@@ -273,10 +276,7 @@ void IR_NEC_Send_Code(u8 *Dat, u32 Len)
             zj <<= 1;
         }
     }
-    TIM_Cmd(IR_NEC_Send_TIM_TIMx, ENABLE);
-    Delay_us(650); // 6ms亮
-    TIM_Cmd(IR_NEC_Send_TIM_TIMx, DISABLE);
-    GPIO_ResetBits(IR_NEC_Send_GPIOx, IR_NEC_Send_GPIO_Pin);
+    IR_NEC_Send_End();
     Delay_ms(40);
 }
 //产生38kHz方波
