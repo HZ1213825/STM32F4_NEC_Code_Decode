@@ -1,24 +1,24 @@
-#include "stm32f4xx.h" // ×¢Òâ¸ü¸ÄÕâ¸öÎÄ¼þµÄ#define STM32F401xxÎª×Ô¼ºµÄÐ¾Æ¬ÐÍºÅ
+#include "stm32f4xx.h" // ×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½#define STM32F401xxÎªï¿½Ô¼ï¿½ï¿½ï¿½Ð¾Æ¬ï¿½Íºï¿½
 #include "Delay.h"
 #include "Usart.h"
 #include "IR_NEC.h"
 
 int main()
 {
-	u8 DAT[5] = {0X10, 0X68, 0X80, 0X03, 0X0};
+	// u8 DAT[5] = {0X10, 0X68, 0X80, 0X03, 0X0};
 	IR_NEC_Read_Init();
-	IR_NEC_Send_Init();
+	// IR_NEC_Send_Init();
 	Usart_init();
-	printf("12");
-	IR_NEC_Send_Code(DAT, 5);
+	// printf("12");
+	// IR_NEC_Send_Code(DAT, 5);
 	while (1)
 	{
-		// if (IR_NEC_Read_OK)
-		// {
-		// 	for (int i = 0; i < N; i++)
-		// 		printf("0x%2X ", Dat[i]);
-		// 	printf("\r\n");
-		// 	IR_NEC_Read_OK = 0;
-		// }
+		if (IR_NEC_Read_OK)
+		{
+			for (int i = 0; i < N; i++)
+				printf("0x%2X ", IR_NEC_Read_Dat[i]);
+			printf("\r\n");
+			IR_NEC_Read_OK = 0;
+		}
 	}
 }

@@ -66,7 +66,7 @@ void IR_NEC_Read_TIM_init(void)
     NVIC_Init_Struct.NVIC_IRQChannelPreemptionPriority = IR_NEC_Read_TIM_Priority_1; //主优先级1
     NVIC_Init_Struct.NVIC_IRQChannelSubPriority = IR_NEC_Read_TIM_Priority_2;        //副优先级1
     NVIC_Init(&NVIC_Init_Struct);                                                    //初始化NVIC
-    TIM_Cmd(IR_NEC_Read_TIM_TIMx, ENABLE);                                           //打开定时器
+    TIM_Cmd(IR_NEC_Read_TIM_TIMx, DISABLE);                                          //关闭定时器
 }
 //读取初始化函数
 void IR_NEC_Read_Init(void)
@@ -83,6 +83,7 @@ void IR_NEC_Read_Decode(void (*val)(void))
     if (IR_NEC_Read_ins == 0) //检测初始低电平
     {
         IR_NEC_Read_ins = 1;
+        TIM_Cmd(IR_NEC_Read_TIM_TIMx, ENABLE);
         TIM_SetCounter(IR_NEC_Read_TIM_TIMx, 0);
     }
     else if (IR_NEC_Read_ins == 1) //判断初始低电平到第二个低电平时间
@@ -113,7 +114,6 @@ void IR_NEC_Read_Decode(void (*val)(void))
     }
     else if (IR_NEC_Read_ins == 2) //开始解码
     {
-        GPIO_ResetBits(GPIOC, GPIO_Pin_13);
         IR_NEC_Read_Time = TIM_GetCounter(IR_NEC_Read_TIM_TIMx);
         if (IR_NEC_Read_Time > 1120 - 500 && IR_NEC_Read_Time < 1120 + 500) // 1.12ms 写入0
         {
@@ -151,6 +151,7 @@ void IR_NEC_Read_Decode(void (*val)(void))
             IR_NEC_Read_zj = 0;
             for (int i = 0; i < N; i++)
                 IR_NEC_Read_Dat2[i] = IR_NEC_Read_Dat[i];
+            TIM_Cmd(IR_NEC_Read_TIM_TIMx, DISABLE);
             val();
         }
 
@@ -235,6 +236,7 @@ __STATIC_INLINE void IR_NEC_Send_1(void)
     Delay_us(1600); // 1.69ms灭
     //共2.25ms
 }
+//结束位
 void IR_NEC_Send_End(void)
 {
     TIM_Cmd(IR_NEC_Send_TIM_TIMx, ENABLE);
@@ -256,14 +258,15 @@ void IR_NEC_Send_Repect(void)
     IR_NEC_Send_End();
     Delay_ms(100);
 }
+// NEC编码发送
 void IR_NEC_Send_Code(u8 *Dat, u32 Len)
 {
     u32 zj;
-    IR_NEC_Send_Guide();
-    for (int j = 0; j < Len; j++)
+    IR_NEC_Send_Guide();          //引导码
+    for (int j = 0; j < Len; j++) //循环数组
     {
         zj = Dat[j];
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++) //从高到低
         {
             if (zj & (0X80))
             {
@@ -276,11 +279,11 @@ void IR_NEC_Send_Code(u8 *Dat, u32 Len)
             zj <<= 1;
         }
     }
-    IR_NEC_Send_End();
+    IR_NEC_Send_End(); //结束位
     Delay_ms(40);
 }
 //产生38kHz方波
-void TIM4_IRQHandler(void)
+void IR_NEC_Send_TIM_IRQHandler(void)
 {
     if (TIM_GetITStatus(IR_NEC_Send_TIM_TIMx, TIM_IT_Update) != RESET)
     {
@@ -296,7 +299,7 @@ void TIM4_IRQHandler(void)
     }
 }
 //定时器中断，不能没有
-void TIM3_IRQHandler(void)
+void IR_NEC_Read_TIM_IRQHandler(void)
 {
     if (TIM_GetITStatus(IR_NEC_Read_TIM_TIMx, TIM_IT_Update) != RESET)
     {
@@ -305,7 +308,7 @@ void TIM3_IRQHandler(void)
     }
 }
 //外部中断0的中断服务函数
-void EXTI0_IRQHandler(void)
+void IR_NEC_Read_EXIT_IRQHandler(void)
 {
     if (EXTI_GetITStatus(IR_NEC_Read_EXIT_Pin) != RESET) //标志位被值位（产生中断）
     {

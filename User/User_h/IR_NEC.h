@@ -14,6 +14,7 @@
 #define IR_NEC_Read_EXIT_IRQn EXTI0_IRQn
 #define IR_NEC_Read_EXIT_Priority_1 1
 #define IR_NEC_Read_EXIT_Priority_2 1
+#define IR_NEC_Read_EXIT_IRQHandler EXTI0_IRQHandler
 
 //定时器
 #define IR_NEC_Read_TIM_RCC RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3, ENABLE)
@@ -21,6 +22,7 @@
 #define IR_NEC_Read_TIM_IRQn TIM3_IRQn
 #define IR_NEC_Read_TIM_Priority_1 2
 #define IR_NEC_Read_TIM_Priority_2 2
+#define IR_NEC_Read_TIM_IRQHandler TIM3_IRQHandler
 
 //发送部分
 // GPIO
@@ -34,6 +36,7 @@
 #define IR_NEC_Send_TIM_IRQn TIM4_IRQn
 #define IR_NEC_Send_TIM_Priority_1 1
 #define IR_NEC_Send_TIM_Priority_2 2
+#define IR_NEC_Send_TIM_IRQHandler TIM4_IRQHandler
 
 #define N 4
 extern u8 IR_NEC_Read_Dat[N]; //解码的数据
